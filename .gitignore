@@ -1,0 +1,25 @@
+# Maven derleme çıktıları
+target/
+
+# jpackage ve Inno Setup çıktıları
+dist/
+installer/Output/
+
+# Gizli bilgiler
+.env
+
+# Kullanıcının kendi veri dosyaları depoya girmez; uygulamayla gelen açık veri setleri hariç
+*.csv
+*.tsv
+!src/main/resources/**/*.csv
+
+# Veritabanı dosyaları
+*.db
+*.sqlite
+
+# Editör ve işletim sistemi dosyaları
+.vscode/
+.idea/
+*.iml
+Thumbs.db
+.DS_Store

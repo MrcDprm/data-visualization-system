@@ -166,7 +166,7 @@
 
 .empty-icon {
     -fx-icon-size: 48px;
-    -fx-icon-color: -color-fg-subtle;
+    -fx-icon-color: -color-fg-muted;
 }
 
 .viz-chart {

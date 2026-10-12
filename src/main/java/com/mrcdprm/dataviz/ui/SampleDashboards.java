@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Örnek veri setleri açılınca hazır gelen panolar: her biri farklı grafik türlerini, tarih gruplamayı, kırılımı,
- * ilk N'i, pano ve kart filtrelerini gösterir. Başlıklar seçili dilde oluşturulur.
+ * ilk N'i, pano ve kart filtrelerini gösterir. Başlıklar çeviri anahtarı olarak saklanır, seçili dilde gösterilir.
  */
 public final class SampleDashboards {
 
@@ -22,7 +22,7 @@ public final class SampleDashboards {
     }
 
     public static Workspace open(SampleDataset sample) {
-        final Workspace w = new Workspace(sample.load(I18n.t("sample." + sample.id() + ".name")), null);
+        final Workspace w = new Workspace(sample.load("@sample." + sample.id() + ".name"), null);
         switch (sample) {
             case OWID_CO2 -> co2(w);
             case NASA_GISTEMP -> temperature(w);
@@ -31,8 +31,13 @@ public final class SampleDashboards {
         return w;
     }
 
+    /** Başlık ve eksen adları metin değil "@anahtar": dil değişince ve proje başka dilde açılınca çevrilir. */
     private static ChartSpec chart(ChartType type, String titleKey, String x, List<String> y, Aggregation a) {
-        return ChartSpec.of(type, I18n.t(titleKey), x, y, a);
+        return ChartSpec.of(type, key(titleKey), x, y, a);
+    }
+
+    private static String key(String k) {
+        return "@" + k;
     }
 
     private static List<Filter> year(int year) {
@@ -42,21 +47,21 @@ public final class SampleDashboards {
     private static void co2(Workspace w) {
         w.filters().add(Filter.range("year", 1990.0, null));
         w.charts().add(chart(ChartType.LINE, "sample.co2.world", "year", List.of("co2"), Aggregation.SUM)
-                .withLabels(null, I18n.t("sample.co2.mt")).withWide(true));
+                .withLabels(null, key("sample.co2.mt")).withWide(true));
         w.charts().add(chart(ChartType.BAR, "sample.co2.top", "country", List.of("co2"), Aggregation.SUM)
-                .withSort(SortOrder.VALUE_DESC, 10).withFilters(year(2024)).withLabels(null, I18n.t("sample.co2.mt")));
+                .withSort(SortOrder.VALUE_DESC, 10).withFilters(year(2024)).withLabels(null, key("sample.co2.mt")));
         w.charts().add(chart(ChartType.PIE, "sample.co2.share", "country", List.of("co2"), Aggregation.SUM)
                 .withSort(SortOrder.AUTO, 7).withFilters(year(2024)).withPalette(Palette.COLORBLIND));
         w.charts().add(chart(ChartType.STACKED_BAR, "sample.co2.fuel", "year",
                 List.of("coal_co2", "oil_co2", "gas_co2", "cement_co2"), Aggregation.SUM)
-                .withLabels(null, I18n.t("sample.co2.mt")).withWide(true));
+                .withLabels(null, key("sample.co2.mt")).withWide(true));
         w.charts().add(chart(ChartType.LINE, "sample.co2.perCapita", "year", List.of("co2_per_capita"), Aggregation.AVG)
                 .withSeries("country")
                 .withFilters(List.of(Filter.values("country", List.of("Turkey", "Germany", "United Kingdom", "France", "China"))))
-                .withLabels(null, I18n.t("sample.co2.tPerPerson")));
+                .withLabels(null, key("sample.co2.tPerPerson")));
         w.charts().add(chart(ChartType.HISTOGRAM, "sample.co2.histogram", "co2_per_capita", List.of(), Aggregation.COUNT)
                 .withBins(20).withFilters(year(2024)).withPalette(Palette.COOL)
-                .withLabels(I18n.t("sample.co2.tPerPerson"), I18n.t("sample.co2.countries")));
+                .withLabels(key("sample.co2.tPerPerson"), key("sample.co2.countries")));
     }
 
     private static void temperature(Workspace w) {
@@ -78,13 +83,13 @@ public final class SampleDashboards {
         w.filters().add(Filter.dates("Tarih", LocalDate.of(2015, 1, 1), null));
         w.charts().add(chart(ChartType.LINE, "sample.dams.monthly", "Tarih",
                 List.of("Ömerli", "Darlık", "Terkos", "Elmalı", "Büyükçekmece"), Aggregation.AVG)
-                .withBucket(DateBucket.MONTH).withLabels(null, I18n.t("sample.dams.percent")).withWide(true));
+                .withBucket(DateBucket.MONTH).withLabels(null, key("sample.dams.percent")).withWide(true));
         w.charts().add(chart(ChartType.BAR, "sample.dams.yearly", "Tarih", List.of("Ömerli"), Aggregation.AVG)
-                .withBucket(DateBucket.YEAR).withLabels(null, I18n.t("sample.dams.percent")).withPalette(Palette.COOL));
+                .withBucket(DateBucket.YEAR).withLabels(null, key("sample.dams.percent")).withPalette(Palette.COOL));
         w.charts().add(chart(ChartType.HISTOGRAM, "sample.dams.histogram", "Ömerli", List.of(), Aggregation.COUNT)
-                .withBins(20).withPalette(Palette.COOL).withLabels(I18n.t("sample.dams.percent"), I18n.t("sample.dams.days")));
+                .withBins(20).withPalette(Palette.COOL).withLabels(key("sample.dams.percent"), key("sample.dams.days")));
         w.charts().add(chart(ChartType.AREA, "sample.dams.terkos", "Tarih", List.of("Terkos"), Aggregation.AVG)
                 .withBucket(DateBucket.DAY).withFilters(List.of(Filter.dates("Tarih", LocalDate.of(2022, 1, 1), null)))
-                .withLabels(null, I18n.t("sample.dams.percent")).withWide(true));
+                .withLabels(null, key("sample.dams.percent")).withWide(true));
     }
 }

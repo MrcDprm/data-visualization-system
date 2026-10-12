@@ -87,6 +87,10 @@ public final class ChartEditor extends Dialog<ChartSpec> {
     private final Label info = Ui.muted("");
     private final PauseTransition debounce = new PauseTransition(Duration.millis(150));
     private final Map<String, Node> rows = new LinkedHashMap<>();
+    /** Kartın kayıtlı başlık ve eksen adları; "@anahtar" ise kullanıcı değiştirmedikçe anahtar korunur. */
+    private String storedTitle;
+    private String storedX;
+    private String storedY;
     private boolean loading;
 
     public ChartEditor(AppContext ctx, DataSet ds, List<Filter> global, ChartSpec existing) {
@@ -240,9 +244,12 @@ public final class ChartEditor extends Dialog<ChartSpec> {
         topN.getValueFactory().setValue(s.topN());
         bins.getValueFactory().setValue(s.bins());
         palette.setValue(s.palette());
-        title.setText(s.title() == null ? "" : s.title());
-        xLabel.setText(s.xLabel() == null ? "" : s.xLabel());
-        yLabel.setText(s.yLabel() == null ? "" : s.yLabel());
+        storedTitle = s.title();
+        storedX = s.xLabel();
+        storedY = s.yLabel();
+        title.setText(s.title() == null ? "" : I18n.display(s.title()));
+        xLabel.setText(s.xLabel() == null ? "" : I18n.display(s.xLabel()));
+        yLabel.setText(s.yLabel() == null ? "" : I18n.display(s.yLabel()));
         filters.clear();
         filters.addAll(s.filters());
         loading = false;
@@ -264,10 +271,18 @@ public final class ChartEditor extends Dialog<ChartSpec> {
             y = y.subList(0, 1);
         final boolean seriesAllowed = t != ChartType.PIE && t != ChartType.HISTOGRAM && y.size() <= 1;
         final String seriesValue = seriesAllowed && series.getValue() != null && !series.getValue().isEmpty() ? series.getValue() : null;
-        return new ChartSpec(id, t, blank(title.getText()), x.getValue(), y,
+        return new ChartSpec(id, t, keep(title.getText(), storedTitle), x.getValue(), y,
                 t == ChartType.HISTOGRAM ? Aggregation.COUNT : aggregation.getValue(), seriesValue, bucket.getValue(),
-                sort.getValue(), topN.getValue(), bins.getValue(), palette.getValue(), blank(xLabel.getText()),
-                blank(yLabel.getText()), List.copyOf(filters), wide).normalized();
+                sort.getValue(), topN.getValue(), bins.getValue(), palette.getValue(), keep(xLabel.getText(), storedX),
+                keep(yLabel.getText(), storedY), List.copyOf(filters), wide).normalized();
+    }
+
+    /** Kutudaki metin kayıtlı anahtarın çevirisiyle aynıysa anahtar saklanır (başka dilde de çevrilsin). */
+    private static String keep(String text, String stored) {
+        final String value = blank(text);
+        if (value != null && stored != null && value.equals(I18n.display(stored)))
+            return stored;
+        return value;
     }
 
     private static String blank(String s) {

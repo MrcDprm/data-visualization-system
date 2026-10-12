@@ -45,7 +45,7 @@ public final class WorkspaceView extends BorderPane {
             if (FileActions.confirmDiscard(ctx))
                 ctx.nav().showStart();
         });
-        final Label name = new Label(ds.name());
+        final Label name = new Label(I18n.display(ds.name()));
         name.getStyleClass().add("topbar-title");
         name.setMaxWidth(320);
         final Label size = Ui.muted(I18n.t("data.size", I18n.count(ds.rowCount()), ds.columns().size()));

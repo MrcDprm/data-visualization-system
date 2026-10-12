@@ -155,7 +155,7 @@ public final class FileActions {
         final Workspace w = ctx.workspace();
         final FileChooser chooser = chooser(ctx, I18n.t("project.saveAs"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.t("files.project"), "*" + ProjectFile.EXTENSION));
-        chooser.setInitialFileName(Exporter.fileName(w.data().name(), ProjectFile.EXTENSION));
+        chooser.setInitialFileName(Exporter.fileName(I18n.display(w.data().name()), ProjectFile.EXTENSION));
         final File file = chooser.showSaveDialog(ctx.window());
         if (file == null)
             return false;
@@ -188,7 +188,7 @@ public final class FileActions {
         final ButtonType save = new ButtonType(I18n.t("project.save"), ButtonBar.ButtonData.YES);
         final ButtonType discard = new ButtonType(I18n.t("project.discard"), ButtonBar.ButtonData.NO);
         final ButtonType cancel = new ButtonType(I18n.t("action.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
-        final Alert alert = new Alert(Alert.AlertType.CONFIRMATION, I18n.t("project.unsaved", w.data().name()), save, discard, cancel);
+        final Alert alert = new Alert(Alert.AlertType.CONFIRMATION, I18n.t("project.unsaved", I18n.display(w.data().name())), save, discard, cancel);
         alert.initOwner(ctx.window());
         alert.setTitle(I18n.t("dialog.confirm"));
         alert.setHeaderText(null);

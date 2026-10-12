@@ -29,6 +29,22 @@ public final class I18n {
     public static void setLocale(Locale newLocale) {
         locale = "en".equals(newLocale.getLanguage()) ? EN : TR;
         bundle = load(locale);
+        // JavaFX'in kendi bileşenleri (tarih seçicideki ay ve gün adları) varsayılan yerel ayarı kullanır
+        Locale.setDefault(locale);
+    }
+
+    public static boolean has(String key) {
+        return bundle.containsKey(key);
+    }
+
+    /**
+     * Örnek panolardaki başlıklar ve veri seti adı dile bağlı kalmasın diye metin yerine "@anahtar" olarak saklanır
+     * (proje dosyasına da öyle yazılır); gösterirken seçili dile çevrilir. Kullanıcının yazdığı metin aynen döner.
+     */
+    public static String display(String text) {
+        if (text != null && text.startsWith("@") && has(text.substring(1)))
+            return t(text.substring(1));
+        return text;
     }
 
     public static Locale locale() {

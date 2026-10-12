@@ -15,7 +15,7 @@ public final class ChartTexts {
 
     public static String title(ChartSpec s) {
         if (s.title() != null && !s.title().isBlank())
-            return s.title();
+            return I18n.display(s.title());
         final String x = s.x() == null ? "?" : s.x();
         return switch (s.type()) {
             case HISTOGRAM -> I18n.t("title.histogram", x);
@@ -26,12 +26,12 @@ public final class ChartTexts {
     }
 
     public static String xAxis(ChartSpec s) {
-        return s.xLabel() != null && !s.xLabel().isBlank() ? s.xLabel() : s.x();
+        return s.xLabel() != null && !s.xLabel().isBlank() ? I18n.display(s.xLabel()) : s.x();
     }
 
     public static String yAxis(ChartSpec s) {
         if (s.yLabel() != null && !s.yLabel().isBlank())
-            return s.yLabel();
+            return I18n.display(s.yLabel());
         if (s.type() == ChartType.HISTOGRAM || s.y().isEmpty() || s.aggregation() == Aggregation.COUNT)
             return I18n.t("chart.rowCount");
         if (s.type() == ChartType.SCATTER)

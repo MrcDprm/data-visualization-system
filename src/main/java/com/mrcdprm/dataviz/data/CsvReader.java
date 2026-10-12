@@ -61,6 +61,8 @@ public final class CsvReader {
 
     public static Table read(byte[] bytes, ImportOptions options) {
         final Charset charset = charset(bytes, options.charset());
+        if (!charset.name().startsWith("UTF-16") && looksBinary(bytes))
+            throw new VizException("notText");
         return parse(decode(bytes, charset), options.withCharset(charset.name()));
     }
 
@@ -95,6 +97,18 @@ public final class CsvReader {
         } catch (CharacterCodingException e) {
             return TURKISH;
         }
+    }
+
+    /**
+     * İçerik denetimi: metin dosyalarında NUL baytı olmaz; resim, Excel (.xlsx), PDF gibi dosyalarda çok olur.
+     * Uzantıya bakılmaz (kullanıcı "Bütün dosyalar" ile her şeyi seçebilir), ilk 64 KB'a bakılır.
+     */
+    static boolean looksBinary(byte[] bytes) {
+        final int n = Math.min(bytes.length, 64 * 1024);
+        for (int i = 0; i < n; i++)
+            if (bytes[i] == 0)
+                return true;
+        return false;
     }
 
     private static String decode(byte[] bytes, Charset charset) {

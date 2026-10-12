@@ -136,6 +136,9 @@ class DataTest {
     void emptyAndInvalidInput() {
         assertEquals("emptyFile", assertThrows(VizException.class, () -> CsvReader.readText("\n\n", ImportOptions.AUTO)).code());
         assertEquals("noRows", assertThrows(VizException.class, () -> CsvReader.readText("a,b\n", ImportOptions.AUTO)).code());
+        // ikili dosya (ör. PNG, xlsx) tablo diye okunmaz
+        final byte[] png = {(byte) 0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0x0d};
+        assertEquals("notText", assertThrows(VizException.class, () -> CsvReader.read(png, ImportOptions.AUTO)).code());
         assertEquals("unknownCharset", assertThrows(VizException.class,
                 () -> CsvReader.read(new byte[] {65}, ImportOptions.AUTO.withCharset("nope"))).code());
     }

@@ -142,6 +142,17 @@ class ChartTest {
     }
 
     @Test
+    void categoryLabelsAreUniqueAndHugeNumbersWork() {
+        final DataSet ds = DataSet.of(CsvReader.readText("x,v\n1.00001,1\n1.00002,2\n1e15,3\n3e15,4\n", ImportOptions.AUTO),
+                "t", DataSet.Source.PASTED);
+        final ChartData bar = run(ds, ChartSpec.of(ChartType.BAR, null, "x", List.of("v"), Aggregation.SUM));
+        assertEquals(bar.categories().size(), new java.util.HashSet<>(bar.categories()).size(), bar.categories().toString());
+        final ChartData h = run(ds, ChartSpec.of(ChartType.HISTOGRAM, null, "x", List.of(), Aggregation.COUNT));
+        assertEquals(h.categories().size(), new java.util.HashSet<>(h.categories()).size(), h.categories().toString());
+        assertEquals(4, java.util.Arrays.stream(h.series().get(0).values()).sum(), 1e-9);
+    }
+
+    @Test
     void scatterSamplesLargeData() {
         final DataSet temp = SampleDataset.NASA_GISTEMP.load("t");
         final ChartData d = run(temp, ChartSpec.of(ChartType.SCATTER, null, "Year", List.of("Anomaly (°C)"), Aggregation.SUM));

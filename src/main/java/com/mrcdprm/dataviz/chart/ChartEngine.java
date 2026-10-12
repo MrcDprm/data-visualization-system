@@ -222,6 +222,7 @@ public final class ChartEngine {
             categories.add(label(k, x.type(), spec.bucket(), locale));
         if (addOther)
             categories.add(labels.other());
+        unique(categories);
         final List<ChartData.Series> series = new ArrayList<>();
         for (String s : seriesNames) {
             final double[] values = new double[categories.size()];
@@ -316,6 +317,7 @@ public final class ChartEngine {
         final List<String> categories = new ArrayList<>(bins);
         for (int b = 0; b < bins; b++)
             categories.add(min == max ? plain(min, locale) : range(start + b * width, start + (b + 1) * width, width, locale));
+        unique(categories);
         return new ChartData(categories, List.of(new ChartData.Series(labels.count(), counts)), null, x.name(),
                 labels.count(), n, false, 0, ignored);
     }
@@ -402,9 +404,9 @@ public final class ChartEngine {
         };
     }
 
-    /** Binlik ayırıcısız sayı: 1950 -> "1950", 2.5 -> "2,5" (Türkçe). */
+    /** Binlik ayırıcısız sayı: 1950 -> "1950", 2.5 -> "2,5" (Türkçe); en fazla 4 ondalık. */
     public static String plain(double v, Locale locale) {
-        final DecimalFormat f = new DecimalFormat("0.##", DecimalFormatSymbols.getInstance(locale));
+        final DecimalFormat f = new DecimalFormat("0.####", DecimalFormatSymbols.getInstance(locale));
         return f.format(v);
     }
 
@@ -425,9 +427,25 @@ public final class ChartEngine {
         return f.format(clean(from)) + " – " + f.format(clean(to));
     }
 
-    /** Kayan nokta artığını (0,30000000000000004) ve "-0"ı temizler. */
+    /** Kayan nokta artığını (0,30000000000000004) ve "-0"ı temizler; çok büyük sayılara dokunmaz (taşma olmasın). */
     private static double clean(double v) {
+        if (Math.abs(v) >= 1e6)
+            return v;
         final double r = Math.round(v * 1e9) / 1e9;
         return r == 0 ? 0 : r;
+    }
+
+    /**
+     * Grafiğin kategori ekseni aynı etiketi iki kez kabul etmez (JavaFX hata verir). Farklı değerler aynı etikete
+     * düşebilir (ör. 1,001 ve 1,004 -> "1"); tekrar eden etikete sıra eklenir: "1", "1 (2)".
+     */
+    static void unique(List<String> labels) {
+        final java.util.Set<String> seen = new java.util.HashSet<>();
+        for (int i = 0; i < labels.size(); i++) {
+            String l = labels.get(i);
+            for (int k = 2; !seen.add(l); k++)
+                l = labels.get(i) + " (" + k + ")";
+            labels.set(i, l);
+        }
     }
 }

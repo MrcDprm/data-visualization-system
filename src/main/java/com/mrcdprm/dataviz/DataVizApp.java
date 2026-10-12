@@ -7,12 +7,14 @@ import com.mrcdprm.dataviz.ui.I18n;
 import com.mrcdprm.dataviz.ui.Settings;
 import com.mrcdprm.dataviz.ui.StartView;
 import com.mrcdprm.dataviz.ui.Theme;
+import com.mrcdprm.dataviz.ui.Ui;
 import com.mrcdprm.dataviz.ui.WorkspaceView;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -41,6 +43,15 @@ public class DataVizApp extends Application implements AppContext.Navigator {
         Theme.apply(settings.darkTheme());
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/mrcdprm/dataviz/icon.png")));
         ctx = new AppContext(settings, this, url -> getHostServices().showDocument(url));
+        // Beklenmeyen bir hata (ör. bir düğmenin işlevinde) sessizce kaybolmasın: günlüğe yazılır, kullanıcıya
+        // ayrıntısız kısa bir mesaj gösterilir (stack trace asla gösterilmez)
+        Thread.setDefaultUncaughtExceptionHandler((thread, error) -> {
+            System.getLogger("dataviz").log(System.Logger.Level.ERROR, "Yakalanmayan hata", error);
+            if (Platform.isFxApplicationThread())
+                Ui.error(ctx.window(), error);
+            else
+                Platform.runLater(() -> Ui.error(ctx.window(), error));
+        });
 
         scene = new Scene(new javafx.scene.layout.StackPane(), 1280, 820);
         Theme.addStylesheet(scene);

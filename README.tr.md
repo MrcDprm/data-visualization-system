@@ -149,14 +149,6 @@ ISCC installer\DataVisualizer.iss
 - **JavaFX ayrıntıları.** Grafikler her palet için üretilen bir `data:` stil dosyasıyla renkleniyor. Tema, diyalogları CSS'te 600 piksele sınırlıyordu ve kodla verilen değer bunu ezmedi; satır içi stil kullandım. Onay kutuları `_` karakterini klavye kısayolu işareti sayıyor; mnemonic ayrıştırmayı kapatana kadar sütun adlarındaki alt çizgiler kayboluyordu.
 - **Portfolyo için bile lisans önemli.** Veriyi eklemeden önce her lisansı kontrol ettim; istedikleri kaynak gösterimini uygulamaya, README'ye ve Hakkında penceresine koydum ve dosyalarda yaptığım her değişikliği yazdım.
 
-## Gelecek Planları
-
-- Excel (.xlsx) içe aktarma
-- Panonun tamamını PDF olarak dışa aktarma
-- Hesaplanmış sütunlar (formüller)
-- Canlı veri kaynakları (API, veritabanı)
-- Ülke verileri için harita grafikleri
-
 ## Lisans
 
 [MIT](LICENSE) © 2026 Miraç Deprem. Uygulamayla gelen veri setleri kendi lisanslarına tabidir ([Veri Kaynakları](#veri-kaynakları)).

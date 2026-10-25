@@ -149,14 +149,6 @@ ISCC installer\DataVisualizer.iss
 - **JavaFX details.** Charts are styled per palette with a generated `data:` stylesheet. The theme limits dialogs to 600 pixels in CSS, and a value set in code did not override it, so I used an inline style. Check boxes treat `_` as a keyboard shortcut marker, which hid underscores in column names until I turned mnemonic parsing off.
 - **Licenses matter even for a portfolio.** Before bundling data I checked each license, kept the attribution they ask for in the app, the README and the About window, and documented every change I made to the files.
 
-## Future Plans
-
-- Excel (.xlsx) import
-- Exporting the whole dashboard as PDF
-- Calculated columns (formulas)
-- Live data sources (APIs, databases)
-- Map charts for country data
-
 ## License
 
 [MIT](LICENSE) © 2026 Miraç Deprem. The bundled datasets keep their own licenses (see [Data Sources](#data-sources)).
